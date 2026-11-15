@@ -2,8 +2,14 @@ const { istParts, isActiveOn, computeAdherence } = require('../src/services/sche
 
 describe('scheduleUtils', () => {
   it('converts UTC to IST across midnight', () => {
-    expect(istParts(new Date('2026-11-15T20:00:00Z'))).toEqual({ date: '2026-11-16', time: '01:30' });
-    expect(istParts(new Date('2026-11-15T18:30:00Z'))).toEqual({ date: '2026-11-16', time: '00:00' });
+    expect(istParts(new Date('2026-11-15T20:00:00Z'))).toEqual({
+      date: '2026-11-16',
+      time: '01:30',
+    });
+    expect(istParts(new Date('2026-11-15T18:30:00Z'))).toEqual({
+      date: '2026-11-16',
+      time: '00:00',
+    });
   });
 
   it('isActiveOn respects start and end dates', () => {

@@ -6,7 +6,13 @@ const { runReminders } = require('../src/services/reminderService');
 const { upcomingSlots, missedSlots } = require('../src/services/scheduleUtils');
 const { createEmailService } = require('../src/services/emailService');
 
-const med = { id: 'm1', name: 'Metformin', dosage: '500mg', times: ['08:00'], startDate: '2026-01-01' };
+const med = {
+  id: 'm1',
+  name: 'Metformin',
+  dosage: '500mg',
+  times: ['08:00'],
+  startDate: '2026-01-01',
+};
 const at = (iso) => new Date(iso); // remember: IST = UTC + 5:30, so 08:00 IST = 02:30Z
 
 describe('slot detection', () => {
@@ -70,15 +76,27 @@ describe('runReminders', () => {
     expect(email.sendMissedAlert).toHaveBeenCalledTimes(1);
 
     const taken = await setup();
-    await taken.repo.setItem('c1', 'doses', 'x', { medicationId: 'm1', date: '2026-11-15', time: '08:00' });
+    await taken.repo.setItem('c1', 'doses', 'x', {
+      medicationId: 'm1',
+      date: '2026-11-15',
+      time: '08:00',
+    });
     await runReminders({ ...taken, now });
     expect(taken.email.sendMissedAlert).not.toHaveBeenCalled();
   });
 
   it('sends appointment reminders within 24 hours, once', async () => {
     const { repo, email } = await setup();
-    await repo.addItem('c1', 'appointments', { title: 'Dentist', date: '2026-11-16', time: '09:00' });
-    await repo.addItem('c1', 'appointments', { title: 'Far away', date: '2026-12-30', time: '09:00' });
+    await repo.addItem('c1', 'appointments', {
+      title: 'Dentist',
+      date: '2026-11-16',
+      time: '09:00',
+    });
+    await repo.addItem('c1', 'appointments', {
+      title: 'Far away',
+      date: '2026-12-30',
+      time: '09:00',
+    });
     const now = at('2026-11-15T10:00:00Z');
     await runReminders({ repo, email, now });
     await runReminders({ repo, email, now });
@@ -120,7 +138,11 @@ describe('emailService', () => {
   });
 
   it('throws when the API rejects, and skips when there are no recipients', async () => {
-    const bad = createEmailService({ apiKey: 'k', from: 'me@x.co', fetchImpl: async () => ({ ok: false, status: 401 }) });
+    const bad = createEmailService({
+      apiKey: 'k',
+      from: 'me@x.co',
+      fetchImpl: async () => ({ ok: false, status: 401 }),
+    });
     await expect(bad.sendMissedAlert(circle, slot)).rejects.toThrow('401');
     const log = jest.spyOn(console, 'log').mockImplementation(() => {});
     const none = createEmailService({ apiKey: 'k', from: 'me@x.co', fetchImpl: jest.fn() });
@@ -131,7 +153,13 @@ describe('emailService', () => {
   it('formats an appointment email', async () => {
     const fetchImpl = jest.fn().mockResolvedValue({ ok: true });
     const svc = createEmailService({ apiKey: 'k', from: 'me@x.co', fetchImpl });
-    await svc.sendAppointmentReminder(circle, { title: 'Eye test', date: '2026-12-01', time: '15:30', doctor: 'Dr. A', location: 'Clinic' });
+    await svc.sendAppointmentReminder(circle, {
+      title: 'Eye test',
+      date: '2026-12-01',
+      time: '15:30',
+      doctor: 'Dr. A',
+      location: 'Clinic',
+    });
     expect(fetchImpl.mock.calls[0][1].body).toContain('3:30 PM');
   });
 });
@@ -146,7 +174,9 @@ describe('POST /api/internal/reminders', () => {
   });
 
   it('runs with the right secret', async () => {
-    const res = await request(app).post('/api/internal/reminders').set('x-cron-secret', config.cronSecret);
+    const res = await request(app)
+      .post('/api/internal/reminders')
+      .set('x-cron-secret', config.cronSecret);
     expect(res.status).toBe(200);
     expect(res.body).toMatchObject({ errors: 0 });
   });

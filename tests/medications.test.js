@@ -69,8 +69,12 @@ describe('medications API', () => {
     expect(ok.body.dosage).toBe('1000mg');
     expect((await a.caretaker.put(url).send({})).status).toBe(400);
     expect((await a.elder.put(url).send({ dosage: '1g' })).status).toBe(403);
-    expect((await a.caretaker.put('/api/medications/unknown').send({ dosage: '1g' })).status).toBe(404);
-    expect((await a.caretaker.put('/api/medications/bad.id').send({ dosage: '1g' })).status).toBe(404);
+    expect((await a.caretaker.put('/api/medications/unknown').send({ dosage: '1g' })).status).toBe(
+      404,
+    );
+    expect((await a.caretaker.put('/api/medications/bad.id').send({ dosage: '1g' })).status).toBe(
+      404,
+    );
   });
 
   it('deletes', async () => {

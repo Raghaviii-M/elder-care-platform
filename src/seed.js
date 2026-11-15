@@ -27,7 +27,12 @@ async function seedDemo(repo) {
   const meds = [
     { name: 'Metformin', dosage: '500mg', times: ['08:00', '20:00'], instructions: 'After meals' },
     { name: 'Amlodipine', dosage: '5mg', times: ['09:00'], instructions: 'For blood pressure' },
-    { name: 'Vitamin D3', dosage: '1000 IU', times: ['21:00'], instructions: 'With a glass of water' },
+    {
+      name: 'Vitamin D3',
+      dosage: '1000 IU',
+      times: ['21:00'],
+      instructions: 'With a glass of water',
+    },
   ];
   let n = 0;
   for (const m of meds) {

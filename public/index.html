@@ -3,9 +3,170 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Elder Care</title>
+    <meta
+      name="description"
+      content="CareCircle helps elderly people and their families manage medicines, appointments and reminders together."
+    />
+    <title>CareCircle: Elderly Care and Medication Manager</title>
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E💊%3C/text%3E%3C/svg%3E"
+    />
+    <link rel="stylesheet" href="/styles.css" />
   </head>
   <body>
-    <main><h1>Elder Care Platform</h1></main>
+    <a class="skip" href="#main">Skip to main content</a>
+
+    <header class="top">
+      <div class="brand"><span aria-hidden="true">💊</span> CareCircle</div>
+      <div class="tools">
+        <button id="btn-text" class="btn ghost" type="button" aria-pressed="false">
+          Larger text
+        </button>
+        <button id="btn-contrast" class="btn ghost" type="button" aria-pressed="false">
+          High contrast
+        </button>
+        <button id="btn-logout" class="btn ghost" type="button" hidden>Sign out</button>
+      </div>
+    </header>
+
+    <main id="main" tabindex="-1">
+      <!-- LOGIN -->
+      <section id="login-view" aria-labelledby="login-h">
+        <div class="hero">
+          <h1 id="login-h">Care that keeps the whole family in the loop</h1>
+          <p>
+            Medicines, doctor visits and reminders in one shared place. The elder stays in control,
+            and family and caretakers stay informed.
+          </p>
+        </div>
+        <div class="grid-2">
+          <form id="login-form" class="card" novalidate>
+            <h2>Sign in</h2>
+            <label for="circleId">Care Circle ID</label>
+            <input id="circleId" autocomplete="username" required />
+            <label for="passcode">Passcode</label>
+            <input id="passcode" type="password" autocomplete="current-password" required />
+            <p id="login-error" class="error" role="alert"></p>
+            <button class="btn primary big" type="submit">Sign in</button>
+            <details class="demo">
+              <summary>Judges: try the demo circle</summary>
+              <p>Circle ID: <code>demo</code></p>
+              <ul>
+                <li>Elder: <code>ELDER-2026</code></li>
+                <li>Caretaker: <code>CARER-2026</code></li>
+                <li>Family: <code>FAMILY-2026</code></li>
+              </ul>
+            </details>
+          </form>
+
+          <form id="create-form" class="card" novalidate>
+            <h2>Create a Care Circle</h2>
+            <label for="c-name">Circle name</label>
+            <input id="c-name" placeholder="e.g. Sharma Family" required />
+            <label for="c-email">Email for reminders</label>
+            <input id="c-email" type="email" autocomplete="email" required />
+            <p id="create-error" class="error" role="alert"></p>
+            <button class="btn primary big" type="submit">Create circle</button>
+            <div id="created" class="created" hidden></div>
+          </form>
+        </div>
+      </section>
+
+      <!-- APP -->
+      <section id="app-view" hidden>
+        <div class="card welcome">
+          <div>
+            <p id="role-badge" class="eyebrow"></p>
+            <h1 id="greeting"></h1>
+            <p id="subline" class="muted"></p>
+          </div>
+          <button id="btn-speak" class="btn primary big" type="button">
+            🔊 Read today's medicines aloud
+          </button>
+        </div>
+
+        <section class="card" aria-labelledby="today-h">
+          <h2 id="today-h">Today's medicines</h2>
+          <div
+            id="today-bar"
+            class="bar"
+            role="progressbar"
+            aria-label="Doses taken today"
+            aria-valuemin="0"
+            aria-valuemax="100"
+            aria-valuenow="0"
+          >
+            <span id="today-fill"></span>
+          </div>
+          <p id="today-summary" class="muted"></p>
+          <ul id="today-list" class="list"></ul>
+        </section>
+
+        <div class="grid-2">
+          <section class="card" aria-labelledby="appt-h">
+            <h2 id="appt-h">Doctor appointments</h2>
+            <ul id="appt-list" class="list"></ul>
+            <form id="appt-form" hidden>
+              <h3>Add an appointment</h3>
+              <label for="a-title">What is it for?</label>
+              <input id="a-title" required />
+              <div class="row">
+                <div>
+                  <label for="a-date">Date</label><input id="a-date" type="date" required />
+                </div>
+                <div>
+                  <label for="a-time">Time</label><input id="a-time" type="time" required />
+                </div>
+              </div>
+              <label for="a-doctor">Doctor (optional)</label>
+              <input id="a-doctor" />
+              <label for="a-location">Location (optional)</label>
+              <input id="a-location" />
+              <p id="appt-error" class="error" role="alert"></p>
+              <button class="btn primary" type="submit">Add appointment</button>
+            </form>
+          </section>
+
+          <section class="card" aria-labelledby="adh-h">
+            <h2 id="adh-h">Adherence: last 7 days</h2>
+            <p class="muted">How many scheduled doses were actually taken.</p>
+            <ul id="adh-list" class="list"></ul>
+          </section>
+        </div>
+
+        <section id="meds-section" class="card" aria-labelledby="meds-h" hidden>
+          <h2 id="meds-h">Manage medications</h2>
+          <ul id="med-list" class="list"></ul>
+          <form id="med-form">
+            <h3>Add a medication</h3>
+            <div class="row">
+              <div><label for="m-name">Name</label><input id="m-name" required /></div>
+              <div>
+                <label for="m-dosage">Dosage</label
+                ><input id="m-dosage" placeholder="500mg" required />
+              </div>
+            </div>
+            <div class="row">
+              <div><label for="m-t1">Time 1</label><input id="m-t1" type="time" required /></div>
+              <div><label for="m-t2">Time 2 (optional)</label><input id="m-t2" type="time" /></div>
+              <div><label for="m-t3">Time 3 (optional)</label><input id="m-t3" type="time" /></div>
+            </div>
+            <label for="m-instr">Instructions (optional)</label>
+            <input id="m-instr" placeholder="After meals" />
+            <label for="m-start">Start date</label>
+            <input id="m-start" type="date" required />
+            <p id="med-error" class="error" role="alert"></p>
+            <button class="btn primary" type="submit">Add medication</button>
+          </form>
+        </section>
+      </section>
+    </main>
+
+    <footer class="foot">
+      CareCircle provides reminders, not medical advice. Always follow your doctor's instructions.
+    </footer>
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+    <script src="/app.js" defer></script>
   </body>
 </html>

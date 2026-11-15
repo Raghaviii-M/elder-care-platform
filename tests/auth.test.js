@@ -22,14 +22,18 @@ describe('POST /api/circles', () => {
   });
 
   it('rejects invalid input', async () => {
-    const res = await request(app).post('/api/circles').send({ name: '', emails: ['nope'] });
+    const res = await request(app)
+      .post('/api/circles')
+      .send({ name: '', emails: ['nope'] });
     expect(res.status).toBe(400);
   });
 
   it('does not store passcodes in plain text', async () => {
     const repo = new MemoryRepo();
     const a = createApp({ repo });
-    const res = await request(a).post('/api/circles').send({ name: 'X', emails: ['a@b.co'] });
+    const res = await request(a)
+      .post('/api/circles')
+      .send({ name: 'X', emails: ['a@b.co'] });
     const stored = await repo.getCircle(res.body.circleId);
     expect(stored.passcodes.elder).not.toBe(res.body.passcodes.elder);
     expect(stored.passcodes.elder).toMatch(/^\$2[aby]\$/);

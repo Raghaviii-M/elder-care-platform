@@ -94,7 +94,7 @@ module.exports = function authRoutes(repo) {
     res.json({ ok: true });
   });
 
-    router.get('/auth/me', requireRole(...ROLES), async (req, res, next) => {
+  router.get('/auth/me', requireRole(...ROLES), async (req, res, next) => {
     try {
       const circle = await repo.getCircle(req.user.circleId);
       res.json({ ...req.user, circleName: circle ? circle.name : '' });

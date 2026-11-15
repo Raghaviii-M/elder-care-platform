@@ -48,8 +48,12 @@ describe('doses API', () => {
   });
 
   it('rejects times outside the schedule, unknown meds and future dates', async () => {
-    expect((await a.elder.post('/api/doses').send({ medicationId: med.id, time: '09:15' })).status).toBe(400);
-    expect((await a.elder.post('/api/doses').send({ medicationId: 'nope', time: '00:00' })).status).toBe(404);
+    expect(
+      (await a.elder.post('/api/doses').send({ medicationId: med.id, time: '09:15' })).status,
+    ).toBe(400);
+    expect(
+      (await a.elder.post('/api/doses').send({ medicationId: 'nope', time: '00:00' })).status,
+    ).toBe(404);
     const future = { medicationId: med.id, time: '00:00', date: '2999-01-01' };
     expect((await a.elder.post('/api/doses').send(future)).status).toBe(400);
   });

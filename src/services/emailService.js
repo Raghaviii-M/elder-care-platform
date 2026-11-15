@@ -27,7 +27,11 @@ function createEmailService({
     }
     const res = await fetchImpl('https://api.brevo.com/v3/smtp/email', {
       method: 'POST',
-      headers: { 'api-key': apiKey, 'content-type': 'application/json', accept: 'application/json' },
+      headers: {
+        'api-key': apiKey,
+        'content-type': 'application/json',
+        accept: 'application/json',
+      },
       body: JSON.stringify({
         sender: { name: 'CareCircle', email: from },
         to: to.map((email) => ({ email })),

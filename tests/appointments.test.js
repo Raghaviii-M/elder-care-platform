@@ -27,8 +27,12 @@ describe('appointments API', () => {
   });
 
   it('validates input', async () => {
-    expect((await a.caretaker.post('/api/appointments').send({ ...appt, time: '25:99' })).status).toBe(400);
-    expect((await a.caretaker.post('/api/appointments').send({ ...appt, title: '' })).status).toBe(400);
+    expect(
+      (await a.caretaker.post('/api/appointments').send({ ...appt, time: '25:99' })).status,
+    ).toBe(400);
+    expect((await a.caretaker.post('/api/appointments').send({ ...appt, title: '' })).status).toBe(
+      400,
+    );
   });
 
   it('only caretaker can update or delete, and empty updates fail', async () => {

@@ -17,7 +17,7 @@ module.exports = function doseRoutes(repo) {
         repo.listItems(circleId, 'medications'),
         repo.listItems(circleId, 'doses', { sinceDate: date }),
       ]);
-        res.json({ date, now, slots: todaySlots(meds, doses, date) });
+      res.json({ date, now, slots: todaySlots(meds, doses, date) });
     } catch (err) {
       next(err);
     }
@@ -38,32 +38,37 @@ module.exports = function doseRoutes(repo) {
     }
   });
 
-  router.post('/', requireRole('elder', 'caretaker'), validate(doseSchema), async (req, res, next) => {
-    try {
-      const { circleId, role } = req.user;
-      const { medicationId, time } = req.body;
-      const med = await repo.getItem(circleId, 'medications', medicationId);
-      if (!med) return res.status(404).json({ error: 'Medication not found' });
-      if (!med.times.includes(time)) {
-        return res.status(400).json({ error: 'Time is not in this medication schedule' });
-      }
-      const today = istParts().date;
-      const date = req.body.date || today;
-      if (date > today) return res.status(400).json({ error: 'Cannot log a future dose' });
+  router.post(
+    '/',
+    requireRole('elder', 'caretaker'),
+    validate(doseSchema),
+    async (req, res, next) => {
+      try {
+        const { circleId, role } = req.user;
+        const { medicationId, time } = req.body;
+        const med = await repo.getItem(circleId, 'medications', medicationId);
+        if (!med) return res.status(404).json({ error: 'Medication not found' });
+        if (!med.times.includes(time)) {
+          return res.status(400).json({ error: 'Time is not in this medication schedule' });
+        }
+        const today = istParts().date;
+        const date = req.body.date || today;
+        if (date > today) return res.status(400).json({ error: 'Cannot log a future dose' });
 
-      const id = `${medicationId}_${date}_${time.replace(':', '')}`;
-      const dose = await repo.setItem(circleId, 'doses', id, {
-        medicationId,
-        date,
-        time,
-        takenAt: new Date().toISOString(),
-        takenBy: role,
-      });
-      res.status(201).json(dose);
-    } catch (err) {
-      next(err);
-    }
-  });
+        const id = `${medicationId}_${date}_${time.replace(':', '')}`;
+        const dose = await repo.setItem(circleId, 'doses', id, {
+          medicationId,
+          date,
+          time,
+          takenAt: new Date().toISOString(),
+          takenBy: role,
+        });
+        res.status(201).json(dose);
+      } catch (err) {
+        next(err);
+      }
+    },
+  );
 
   return router;
 };
