@@ -1,7 +1,17 @@
 const { Firestore } = require('@google-cloud/firestore');
 
 class FirestoreRepo {
-  constructor(db = new Firestore({ ignoreUndefinedProperties: true })) {
+  constructor(db) {
+    if (!db) {
+      const options = { ignoreUndefinedProperties: true };
+      const raw = process.env.FIREBASE_SERVICE_ACCOUNT;
+      if (raw) {
+        const sa = JSON.parse(raw);
+        options.projectId = sa.project_id;
+        options.credentials = { client_email: sa.client_email, private_key: sa.private_key };
+      }
+      db = new Firestore(options);
+    }
     this.db = db;
   }
 
