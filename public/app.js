@@ -160,7 +160,9 @@
     await refresh();
     loadInsights();
     clearInterval(state.timer);
-    state.timer = setInterval(refresh, 60000); // keep every role's view current
+    state.timer = setInterval(() => {
+      if (!document.hidden) refresh();
+    }, 60000); // no polling in background tabs
     $('#main').focus();
   }
 
@@ -174,23 +176,17 @@
 
   async function refresh() {
     try {
-      const [today, adh, appts, meds, feed] = await Promise.all([
-        api('/doses/today'),
-        api('/doses/adherence?days=7'),
-        api('/appointments'),
-        api('/medications'),
-        api('/activity'),
-      ]);
-      state.today = today;
-      renderBanner(today);
-      renderNext(today);
-      renderToday(today);
-      renderStats(today, adh, appts);
-      renderWeek(adh);
-      renderAppts(appts, today.date);
-      renderMeds(meds);
-      renderFeed(feed);
-      if (!$('#m-start').value) $('#m-start').value = today.date;
+      const d = await api('/dashboard');
+      state.today = d.today;
+      renderBanner(d.today);
+      renderNext(d.today);
+      renderToday(d.today);
+      renderStats(d.today, d.adherence, d.appointments);
+      renderWeek(d.adherence);
+      renderAppts(d.appointments, d.today.date);
+      renderMeds(d.medications);
+      renderFeed(d.activity);
+      if (!$('#m-start').value) $('#m-start').value = d.today.date;
     } catch (err) {
       if (err.status === 401) return showLogin();
       toast(errMsg(err), true);
@@ -575,10 +571,10 @@
     }
   }
 
-  async function loadInsights() {
+  async function loadInsights(force = false) {
     $('#insight-text').textContent = 'Analysing the last 7 days…';
     try {
-      const r = await api('/ai/insights');
+      const r = await api('/ai/insights' + (force ? '?refresh=1' : ''));
       $('#insight-text').textContent = r.text;
       $('#insight-src').textContent = r.source === 'gemini' ? 'Written by Gemini' : 'Smart summary';
     } catch {
@@ -586,8 +582,7 @@
       $('#insight-src').textContent = '';
     }
   }
-  $('#btn-insight').addEventListener('click', loadInsights);
-
+  $('#btn-insight').addEventListener('click', () => loadInsights(true));
   function speak() {
     if (!('speechSynthesis' in window))
       return toast('Read-aloud is not supported in this browser.', true);
@@ -774,6 +769,9 @@
     await api('/auth/logout', { method: 'POST' }).catch(() => {});
     showLogin();
     toast('Signed out.');
+  });
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden && state.role) refresh();
   });
 
   applyPrefs();

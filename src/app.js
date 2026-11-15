@@ -14,6 +14,7 @@ const internalRoutes = require('./routes/internal');
 const { createEmailService } = require('./services/emailService');
 const { createAiService } = require('./services/aiService');
 const { notFound, errorHandler } = require('./middleware/errors');
+const dashboardRoutes = require('./routes/dashboard');
 
 function createApp({ repo, email = createEmailService(), ai = createAiService() }) {
   const app = express();
@@ -40,6 +41,7 @@ function createApp({ repo, email = createEmailService(), ai = createAiService() 
   app.use('/api/activity', activityRoutes({ repo, email }));
   app.use('/api/ai', aiRoutes({ repo, ai }));
   app.use('/api/internal', internalRoutes({ repo, email }));
+  app.use('/api/dashboard', dashboardRoutes(repo));
 
   app.use(express.static(path.join(__dirname, '..', 'public'), { maxAge: '1h' }));
   app.use('/api', notFound);

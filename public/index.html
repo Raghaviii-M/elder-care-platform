@@ -22,6 +22,7 @@
     <link rel="stylesheet" href="/styles.css" />
   </head>
   <body>
+    <noscript><p style="padding: 1rem">CareCircle needs JavaScript to run.</p></noscript>
     <a class="skip" href="#main">Skip to main content</a>
 
     <header class="nav">
@@ -29,7 +30,7 @@
         <a class="brand" href="/" aria-label="CareCircle home"
           ><span class="logo" aria-hidden="true">💊</span>CareCircle</a
         >
-        <div class="tools">
+        <nav class="tools" aria-label="Display and account options">
           <button id="btn-text" class="pill" type="button" aria-pressed="false">
             Aa Larger text
           </button>
@@ -37,13 +38,13 @@
             ◐ High contrast
           </button>
           <button id="btn-logout" class="pill solid" type="button" hidden>Sign out</button>
-        </div>
+        </nav>
       </div>
     </header>
 
     <main id="main" tabindex="-1">
       <!-- ============ LANDING / SIGN IN ============ -->
-      <section id="login-view" aria-labelledby="login-h">
+      <section id="login-view" aria-labelledby="login-h" aria-describedby="login-error">
         <div class="hero">
           <div class="hero-copy">
             <p class="eyebrow">Elder care, reimagined</p>

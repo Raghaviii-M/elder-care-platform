@@ -8,9 +8,11 @@ const { computeAdherence, istParts, DAY_MS } = require('../services/scheduleUtil
 const ALL = ['elder', 'caretaker', 'family'];
 const parseSchema = z.object({ text: z.string().trim().min(3).max(300) });
 const explainSchema = z.object({ name: z.string().trim().min(1).max(100) });
+const { TtlCache } = require('../services/ttlCache');
 
 module.exports = function aiRoutes({ repo, ai }) {
   const router = express.Router();
+  const insightCache = new TtlCache(5 * 60 * 1000);
   router.use(
     rateLimit({
       windowMs: 60 * 1000,
@@ -42,6 +44,9 @@ module.exports = function aiRoutes({ repo, ai }) {
   router.get('/insights', requireRole(...ALL), async (req, res, next) => {
     try {
       const { circleId } = req.user;
+      const cached = req.query.refresh ? undefined : insightCache.get(circleId);
+      if (cached) return res.json(cached);
+
       const since = istParts(new Date(Date.now() - 7 * DAY_MS)).date;
       const [meds, doses] = await Promise.all([
         repo.listItems(circleId, 'medications'),
@@ -51,13 +56,13 @@ module.exports = function aiRoutes({ repo, ai }) {
       const expected = per.reduce((s, m) => s + m.expected, 0);
       const taken = per.reduce((s, m) => s + m.taken, 0);
       const weakest = [...per].sort((a, b) => a.percent - b.percent)[0];
-      res.json(
-        await ai.insights({
-          overall: expected ? Math.round((taken / expected) * 100) : null,
-          weakest: weakest ? { name: weakest.name, percent: weakest.percent } : null,
-          medications: per.map(({ name, percent }) => ({ name, percent })),
-        }),
-      );
+      const result = await ai.insights({
+        overall: expected ? Math.round((taken / expected) * 100) : null,
+        weakest: weakest ? { name: weakest.name, percent: weakest.percent } : null,
+        medications: per.map(({ name, percent }) => ({ name, percent })),
+      });
+      insightCache.set(circleId, result);
+      res.json(result);
     } catch (err) {
       next(err);
     }

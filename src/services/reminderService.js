@@ -1,5 +1,6 @@
 const { istParts, DAY_MS, slotMs, upcomingSlots, missedSlots } = require('./scheduleUtils');
 
+const BATCH = 5; // circles processed in parallel
 const idPart = (prefix, id, date, time) => `${prefix}_${id}_${date}_${time.replace(':', '')}`;
 
 /** Send at most once per key. A failed send is not recorded, so the next run retries it. */
@@ -13,6 +14,7 @@ async function once(repo, circleId, key, send) {
 
 async function runReminders({ repo, email, now = new Date() }) {
   const stats = { circles: 0, due: 0, missed: 0, appointments: 0, errors: 0 };
+  const today = istParts(now).date;
   const yesterday = istParts(new Date(now.getTime() - DAY_MS)).date;
 
   const attempt = async (circleId, key, send) => {
@@ -25,12 +27,12 @@ async function runReminders({ repo, email, now = new Date() }) {
     }
   };
 
-  for (const circle of await repo.listCircles()) {
+  async function processCircle(circle) {
     stats.circles++;
-    const [meds, doses, appts] = await Promise.all([
-      repo.listItems(circle.id, 'medications'),
-      repo.listItems(circle.id, 'doses', { sinceDate: yesterday }),
-      repo.listItems(circle.id, 'appointments'),
+    const meds = await repo.listItems(circle.id, 'medications');
+    const [doses, appts] = await Promise.all([
+      meds.length ? repo.listItems(circle.id, 'doses', { sinceDate: yesterday }) : [],
+      repo.listItems(circle.id, 'appointments', { sinceDate: today }),
     ]);
 
     for (const s of upcomingSlots(meds, doses, now)) {
@@ -50,6 +52,11 @@ async function runReminders({ repo, email, now = new Date() }) {
         }
       }
     }
+  }
+
+  const circles = await repo.listCircles();
+  for (let i = 0; i < circles.length; i += BATCH) {
+    await Promise.all(circles.slice(i, i + BATCH).map(processCircle));
   }
   return stats;
 }

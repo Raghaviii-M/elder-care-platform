@@ -11,11 +11,11 @@ A shared, passcode-secured space where an elderly person, their caretakers and t
 
 Circle ID: `demo`
 
-| Role | Passcode |
-|---|---|
-| Elder | `ELDER-2026` |
-| Caretaker | `CARER-2026` |
-| Family | `FAMILY-2026` |
+| Role      | Passcode      |
+| --------- | ------------- |
+| Elder     | `ELDER-2026`  |
+| Caretaker | `CARER-2026`  |
+| Family    | `FAMILY-2026` |
 
 The sign-in page also has one-click demo buttons.
 
@@ -25,15 +25,15 @@ Elderly people often juggle many medicines and appointments while family members
 
 ## What CareCircle does
 
-| Requirement | How it is solved |
-|---|---|
-| Secure, passcode-based shared access | Each Care Circle has three separate passcodes (elder, caretaker, family), stored as bcrypt hashes, with role-based permissions |
-| View, add, edit, manage medication schedules | Caretaker CRUD with strict validation |
-| Track adherence | Per-medicine percentages, a 7-day chart, and a "today" progress ring |
-| Monitor upcoming appointments | Shared appointment list, added by caretaker or family |
-| Proactive email reminders | A scheduled job emails upcoming doses, missed doses and appointments within 24 hours |
-| Go beyond reminders | See "Beyond reminders" below |
-| Elder at the centre | Every change made by someone else appears in the elder's feed to **confirm or challenge** |
+| Requirement                                  | How it is solved                                                                                                               |
+| -------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| Secure, passcode-based shared access         | Each Care Circle has three separate passcodes (elder, caretaker, family), stored as bcrypt hashes, with role-based permissions |
+| View, add, edit, manage medication schedules | Caretaker CRUD with strict validation                                                                                          |
+| Track adherence                              | Per-medicine percentages, a 7-day chart, and a "today" progress ring                                                           |
+| Monitor upcoming appointments                | Shared appointment list, added by caretaker or family                                                                          |
+| Proactive email reminders                    | A scheduled job emails upcoming doses, missed doses and appointments within 24 hours                                           |
+| Go beyond reminders                          | See "Beyond reminders" below                                                                                                   |
+| Elder at the centre                          | Every change made by someone else appears in the elder's feed to **confirm or challenge**                                      |
 
 ### Beyond reminders
 
@@ -81,19 +81,19 @@ Design decisions:
 
 ## Security
 
-| Area | Measure |
-|---|---|
-| Passcodes | bcrypt-hashed, shown once at creation, generated with a CSPRNG, no look-alike characters |
-| Sessions | JWT in an `httpOnly`, `sameSite=strict`, `secure` cookie, 8-hour expiry |
-| Authorisation | Role middleware on every route. Every query is scoped by the circle in the token, never an ID from the client |
-| Brute force | Login rate-limited to 10 attempts per 15 minutes, with SOS and AI limits as well |
-| Account enumeration | Identical error for unknown circle and wrong passcode |
-| Input | zod schemas on every body, unknown fields stripped, ID params validated, 10 KB body limit |
-| XSS | The UI builds the DOM with `textContent`, never `innerHTML`. Email content is HTML-escaped. Strict CSP via helmet |
-| Scheduler endpoint | Secret header, compared in constant time |
-| AI safety | Input length-capped, prompt told to treat user text as data, output schema-validated, graceful fallback |
-| Secrets | Environment variables only. `.env` and service-account keys are git-ignored |
-| Config | The server refuses to start in production without its secrets |
+| Area                | Measure                                                                                                           |
+| ------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| Passcodes           | bcrypt-hashed, shown once at creation, generated with a CSPRNG, no look-alike characters                          |
+| Sessions            | JWT in an `httpOnly`, `sameSite=strict`, `secure` cookie, 8-hour expiry                                           |
+| Authorisation       | Role middleware on every route. Every query is scoped by the circle in the token, never an ID from the client     |
+| Brute force         | Login rate-limited to 10 attempts per 15 minutes, with SOS and AI limits as well                                  |
+| Account enumeration | Identical error for unknown circle and wrong passcode                                                             |
+| Input               | zod schemas on every body, unknown fields stripped, ID params validated, 10 KB body limit                         |
+| XSS                 | The UI builds the DOM with `textContent`, never `innerHTML`. Email content is HTML-escaped. Strict CSP via helmet |
+| Scheduler endpoint  | Secret header, compared in constant time                                                                          |
+| AI safety           | Input length-capped, prompt told to treat user text as data, output schema-validated, graceful fallback           |
+| Secrets             | Environment variables only. `.env` and service-account keys are git-ignored                                       |
+| Config              | The server refuses to start in production without its secrets                                                     |
 
 ## Tech stack
 
@@ -113,13 +113,13 @@ Local mode uses the in-memory store and seeds the demo circle when `SEED_DEMO=tr
 
 ### Environment variables
 
-| Variable | Purpose |
-|---|---|
-| `JWT_SECRET`, `CRON_SECRET` | Required in production |
-| `FIREBASE_SERVICE_ACCOUNT` | Service-account JSON for Firestore (production) |
+| Variable                     | Purpose                                                   |
+| ---------------------------- | --------------------------------------------------------- |
+| `JWT_SECRET`, `CRON_SECRET`  | Required in production                                    |
+| `FIREBASE_SERVICE_ACCOUNT`   | Service-account JSON for Firestore (production)           |
 | `BREVO_API_KEY`, `MAIL_FROM` | Email delivery. Without them, emails are logged, not sent |
-| `GEMINI_API_KEY` | Optional. Without it the rule-based fallback is used |
-| `SEED_DEMO` | `true` creates the demo circle |
+| `GEMINI_API_KEY`             | Optional. Without it the rule-based fallback is used      |
+| `SEED_DEMO`                  | `true` creates the demo circle                            |
 
 ## Tests
 
