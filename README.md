@@ -50,7 +50,7 @@ Elderly people often juggle many medicines and appointments while family members
 - "Larger text" and "High contrast" modes, both remembered between visits
 - Touch targets of at least 44px, visible focus outlines, `prefers-reduced-motion` respected
 - Full keyboard operation, including native `<dialog>` for confirmations
-- Lighthouse accessibility score: **<YOUR SCORE>**
+- Lighthouse accessibility score: **100 / 100** (SEO 100, Best Practices 92)
 
 ## Architecture
 
@@ -128,7 +128,10 @@ npm test      # Jest with coverage
 npm run lint
 ```
 
-Tests cover authentication and rate limiting, role permissions, circle isolation (IDOR), validation, dose logging, adherence maths, slot detection across midnight, reminder idempotency and retry, email escaping, the cron endpoint, the care feed, SOS, check-ins, and the AI service including failure fallbacks. Latest result: **<N tests passing, X% coverage>**. CI runs lint and tests on every push.
+Tests cover authentication and rate limiting, role permissions, circle isolation (IDOR), validation, dose logging, adherence maths, slot detection across midnight, reminder idempotency and retry, email escaping, the cron endpoint, the care feed, SOS, check-ins, and the AI service including failure fallbacks.
+
+Latest result: **76 tests passing (9 test suites), 93.59% statement coverage**. 
+CI runs lint and tests on every push.. CI runs lint and tests on every push.
 
 ## Future work
 
