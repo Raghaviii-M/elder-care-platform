@@ -102,7 +102,7 @@ Node.js 20, Express, Firestore, Brevo (email API), Gemini API, Jest and Supertes
 ## Run locally
 
 ```bash
-git clone https://github.com/<YOUR-USERNAME>/elder-care-platform.git
+git clone https://github.com/Raghaviii-M/elder-care-platform
 cd elder-care-platform
 npm ci
 cp .env.example .env     # on Windows PowerShell: Copy-Item .env.example .env
