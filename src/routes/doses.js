@@ -12,12 +12,12 @@ module.exports = function doseRoutes(repo) {
   router.get('/today', requireRole(...ALL), async (req, res, next) => {
     try {
       const { circleId } = req.user;
-      const { date } = istParts();
+      const { date, time: now } = istParts();
       const [meds, doses] = await Promise.all([
         repo.listItems(circleId, 'medications'),
         repo.listItems(circleId, 'doses', { sinceDate: date }),
       ]);
-      res.json({ date, slots: todaySlots(meds, doses, date) });
+        res.json({ date, now, slots: todaySlots(meds, doses, date) });
     } catch (err) {
       next(err);
     }

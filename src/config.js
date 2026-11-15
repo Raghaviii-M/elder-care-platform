@@ -15,5 +15,5 @@ module.exports = {
   jwtSecret: secret('JWT_SECRET', 'dev-only-jwt-secret'),
   cronSecret: secret('CRON_SECRET', 'dev-only-cron-secret'),
   repo: process.env.REPO || (isProd ? 'firestore' : 'memory'),
-  timezone: 'Asia/Kolkata',   bcryptRounds: process.env.NODE_ENV === 'test' ? 4 : 10,
+  timezone: 'Asia/Kolkata',   bcryptRounds: process.env.NODE_ENV === 'test' ? 4 : 10,  seedDemo: process.env.SEED_DEMO === 'true',
 };

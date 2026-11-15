@@ -68,5 +68,58 @@ function computeAdherence(meds, doses, days, now = new Date()) {
     };
   });
 }
+const IST_OFFSET = '+05:30'; // India has no daylight saving, so a fixed offset is safe
+const slotMs = (date, time) => Date.parse(`${date}T${time}:00${IST_OFFSET}`);
+const takenKey = (id, date, time) => `${id}|${date}|${time}`;
 
-module.exports = { TZ, istParts, isActiveOn, todaySlots, computeAdherence };
+function candidateDates(now) {
+  return [-1, 0, 1].map((i) => istParts(new Date(now.getTime() + i * DAY_MS)).date);
+}
+
+/** Doses starting within the next `windowMin` minutes that are not yet taken. */
+function upcomingSlots(meds, doses, now, windowMin = 10) {
+  const taken = new Set(doses.map((d) => takenKey(d.medicationId, d.date, d.time)));
+  const out = [];
+  for (const date of candidateDates(now)) {
+    for (const med of meds) {
+      if (!isActiveOn(med, date)) continue;
+      for (const time of med.times) {
+        const diff = slotMs(date, time) - now.getTime();
+        if (diff >= 0 && diff <= windowMin * 60000 && !taken.has(takenKey(med.id, date, time))) {
+          out.push({ med, date, time });
+        }
+      }
+    }
+  }
+  return out;
+}
+
+/** Doses overdue by at least `graceMin` (but within `lookbackMin`) and still not taken. */
+function missedSlots(meds, doses, now, graceMin = 30, lookbackMin = 240) {
+  const taken = new Set(doses.map((d) => takenKey(d.medicationId, d.date, d.time)));
+  const out = [];
+  for (const date of candidateDates(now)) {
+    for (const med of meds) {
+      if (!isActiveOn(med, date)) continue;
+      for (const time of med.times) {
+        const late = now.getTime() - slotMs(date, time);
+        if (late >= graceMin * 60000 && late <= lookbackMin * 60000) {
+          if (!taken.has(takenKey(med.id, date, time))) out.push({ med, date, time });
+        }
+      }
+    }
+  }
+  return out;
+}
+
+module.exports = {
+  TZ,
+  DAY_MS,
+  istParts,
+  isActiveOn,
+  todaySlots,
+  computeAdherence,
+  slotMs,
+  upcomingSlots,
+  missedSlots,
+};
