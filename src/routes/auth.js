@@ -17,7 +17,10 @@ const createSchema = z.object({
 });
 
 const loginSchema = z.object({
-  circleId: z.string().trim().min(1).max(40),
+  circleId: z
+    .string()
+    .trim()
+    .regex(/^[A-Za-z0-9_-]{1,40}$/),
   passcode: z.string().min(4).max(64),
 });
 
@@ -46,7 +49,7 @@ module.exports = function authRoutes(repo) {
       const hashes = {};
       for (const role of ROLES) {
         passcodes[role] = generatePasscode();
-        hashes[role] = await bcrypt.hash(passcodes[role], 10);
+        hashes[role] = await bcrypt.hash(passcodes[role], config.bcryptRounds);
       }
       await repo.createCircle({
         id,

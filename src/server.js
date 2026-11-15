@@ -2,9 +2,14 @@ const config = require('./config');
 const { createApp } = require('./app');
 const { MemoryRepo } = require('./repositories/memoryRepo');
 
-// Firestore repo comes in Phase 2; memory repo for now
-const repo = new MemoryRepo();
+function buildRepo() {
+  if (config.repo === 'firestore') {
+    const { FirestoreRepo } = require('./repositories/firestoreRepo');
+    return new FirestoreRepo();
+  }
+  return new MemoryRepo();
+}
 
-createApp({ repo }).listen(config.port, () => {
-  console.log(`Elder Care running on http://localhost:${config.port}`);
+createApp({ repo: buildRepo() }).listen(config.port, () => {
+  console.log(`Elder Care running on port ${config.port} (${config.repo} store)`);
 });

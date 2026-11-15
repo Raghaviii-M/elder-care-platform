@@ -5,6 +5,9 @@ const compression = require('compression');
 const cookieParser = require('cookie-parser');
 const authRoutes = require('./routes/auth');
 const { notFound, errorHandler } = require('./middleware/errors');
+const medicationRoutes = require('./routes/medications');
+const doseRoutes = require('./routes/doses');
+const appointmentRoutes = require('./routes/appointments');
 
 function createApp({ repo }) {
   const app = express();
@@ -20,9 +23,9 @@ function createApp({ repo }) {
   app.use('/api', authRoutes(repo));
   // Phase 2 routes (medications, doses, appointments) get mounted here
 
-  app.use(express.static(path.join(__dirname, '..', 'public')));
-  app.use('/api', notFound);
-  app.use(errorHandler);
+    app.use('/api/medications', medicationRoutes(repo));
+    app.use('/api/doses', doseRoutes(repo));
+    app.use('/api/appointments', appointmentRoutes(repo));
   return app;
 }
 
