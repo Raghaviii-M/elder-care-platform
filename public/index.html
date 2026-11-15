@@ -3,11 +3,18 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#3730a3" />
     <meta
       name="description"
-      content="CareCircle helps elderly people and their families manage medicines, appointments and reminders together."
+      content="CareCircle: a shared, passcode-secured space where elders, caretakers and family manage medicines, appointments and wellbeing together."
     />
     <title>CareCircle: Elderly Care and Medication Manager</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
     <link
       rel="icon"
       href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E💊%3C/text%3E%3C/svg%3E"
@@ -17,155 +24,323 @@
   <body>
     <a class="skip" href="#main">Skip to main content</a>
 
-    <header class="top">
-      <div class="brand"><span aria-hidden="true">💊</span> CareCircle</div>
-      <div class="tools">
-        <button id="btn-text" class="btn ghost" type="button" aria-pressed="false">
-          Larger text
-        </button>
-        <button id="btn-contrast" class="btn ghost" type="button" aria-pressed="false">
-          High contrast
-        </button>
-        <button id="btn-logout" class="btn ghost" type="button" hidden>Sign out</button>
+    <header class="nav">
+      <div class="nav-in">
+        <a class="brand" href="/" aria-label="CareCircle home"
+          ><span class="logo" aria-hidden="true">💊</span>CareCircle</a
+        >
+        <div class="tools">
+          <button id="btn-text" class="pill" type="button" aria-pressed="false">
+            Aa Larger text
+          </button>
+          <button id="btn-contrast" class="pill" type="button" aria-pressed="false">
+            ◐ High contrast
+          </button>
+          <button id="btn-logout" class="pill solid" type="button" hidden>Sign out</button>
+        </div>
       </div>
     </header>
 
     <main id="main" tabindex="-1">
-      <!-- LOGIN -->
+      <!-- ============ LANDING / SIGN IN ============ -->
       <section id="login-view" aria-labelledby="login-h">
         <div class="hero">
-          <h1 id="login-h">Care that keeps the whole family in the loop</h1>
-          <p>
-            Medicines, doctor visits and reminders in one shared place. The elder stays in control,
-            and family and caretakers stay informed.
-          </p>
-        </div>
-        <div class="grid-2">
-          <form id="login-form" class="card" novalidate>
-            <h2>Sign in</h2>
+          <div class="hero-copy">
+            <p class="eyebrow">Elder care, reimagined</p>
+            <h1 id="login-h">
+              Care that keeps the whole family in the loop, with the elder in control.
+            </h1>
+            <p class="lead">
+              One shared, passcode-secured space for medicines, doctor visits and daily wellbeing.
+              Smart emails reach the family the moment a dose is missed, and nothing changes without
+              the elder's say.
+            </p>
+            <ul class="trust">
+              <li>🔒 Passcode access</li>
+              <li>📧 Missed-dose alerts</li>
+              <li>✨ Gemini AI assist</li>
+              <li>♿ Accessible by design</li>
+            </ul>
+          </div>
+
+          <form id="login-form" class="card auth" novalidate>
+            <h2>Welcome back</h2>
             <label for="circleId">Care Circle ID</label>
             <input id="circleId" autocomplete="username" required />
             <label for="passcode">Passcode</label>
             <input id="passcode" type="password" autocomplete="current-password" required />
             <p id="login-error" class="error" role="alert"></p>
-            <button class="btn primary big" type="submit">Sign in</button>
-            <details class="demo">
-              <summary>Judges: try the demo circle</summary>
-              <p>Circle ID: <code>demo</code></p>
-              <ul>
-                <li>Elder: <code>ELDER-2026</code></li>
-                <li>Caretaker: <code>CARER-2026</code></li>
-                <li>Family: <code>FAMILY-2026</code></li>
-              </ul>
-            </details>
+            <button class="btn primary big full" type="submit">Sign in</button>
+            <div class="demo">
+              <p><strong>Judges, try the live demo</strong> with one click:</p>
+              <div class="demo-btns">
+                <button type="button" class="chip-btn" data-demo="ELDER-2026">👵 Elder</button>
+                <button type="button" class="chip-btn" data-demo="CARER-2026">🧑‍⚕️ Caretaker</button>
+                <button type="button" class="chip-btn" data-demo="FAMILY-2026">👨‍👩‍👧 Family</button>
+              </div>
+            </div>
           </form>
+        </div>
 
-          <form id="create-form" class="card" novalidate>
-            <h2>Create a Care Circle</h2>
-            <label for="c-name">Circle name</label>
-            <input id="c-name" placeholder="e.g. Sharma Family" required />
-            <label for="c-email">Email for reminders</label>
-            <input id="c-email" type="email" autocomplete="email" required />
+        <section class="features" aria-labelledby="feat-h">
+          <h2 id="feat-h">Built to go beyond reminders</h2>
+          <div class="feature-grid">
+            <article class="feature">
+              <span aria-hidden="true">🔐</span>
+              <h3>Passcode circles</h3>
+              <p>
+                Separate passcodes for the elder, caretaker and family, with role-based permissions.
+              </p>
+            </article>
+            <article class="feature">
+              <span aria-hidden="true">📧</span>
+              <h3>Proactive emails</h3>
+              <p>Upcoming doses, missed doses and appointments, sent once and never duplicated.</p>
+            </article>
+            <article class="feature">
+              <span aria-hidden="true">✨</span>
+              <h3>AI smart-add</h3>
+              <p>Describe a medicine in plain words and Gemini fills in the schedule for review.</p>
+            </article>
+            <article class="feature">
+              <span aria-hidden="true">🙋</span>
+              <h3>Elder stays in control</h3>
+              <p>Confirm or challenge every change. One-tap SOS and daily mood check-in.</p>
+            </article>
+            <article class="feature">
+              <span aria-hidden="true">📊</span>
+              <h3>Adherence insights</h3>
+              <p>A weekly chart and a plain-English summary of how things are going.</p>
+            </article>
+            <article class="feature">
+              <span aria-hidden="true">♿</span>
+              <h3>Accessible by design</h3>
+              <p>Large text, high contrast, read-aloud and full keyboard support.</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="card create" aria-labelledby="create-h">
+          <h2 id="create-h">Start your own Care Circle</h2>
+          <form id="create-form" novalidate>
+            <div class="row">
+              <div>
+                <label for="c-name">Circle name</label
+                ><input id="c-name" placeholder="e.g. Sharma Family" required />
+              </div>
+              <div>
+                <label for="c-email">Email for reminders</label
+                ><input id="c-email" type="email" autocomplete="email" required />
+              </div>
+            </div>
             <p id="create-error" class="error" role="alert"></p>
-            <button class="btn primary big" type="submit">Create circle</button>
+            <button class="btn primary" type="submit">Create circle</button>
             <div id="created" class="created" hidden></div>
           </form>
-        </div>
+        </section>
       </section>
 
-      <!-- APP -->
+      <!-- ============ DASHBOARD ============ -->
       <section id="app-view" hidden>
-        <div class="card welcome">
-          <div>
-            <p id="role-badge" class="eyebrow"></p>
+        <div class="banner">
+          <div class="banner-copy">
+            <p id="role-badge" class="eyebrow light"></p>
             <h1 id="greeting"></h1>
-            <p id="subline" class="muted"></p>
+            <p id="subline"></p>
+            <div class="banner-actions">
+              <button id="btn-speak" class="btn light" type="button">🔊 Read my day aloud</button>
+              <button id="btn-sos" class="btn sos" type="button" data-roles="elder">
+                🚨 I need help
+              </button>
+            </div>
           </div>
-          <button id="btn-speak" class="btn primary big" type="button">
-            🔊 Read today's medicines aloud
-          </button>
+          <div class="ring-wrap" role="img" aria-label="Today's progress">
+            <svg class="ring" viewBox="0 0 120 120" aria-hidden="true">
+              <circle class="ring-bg" cx="60" cy="60" r="52"></circle>
+              <circle id="ring-fg" class="ring-fg" cx="60" cy="60" r="52"></circle>
+            </svg>
+            <div class="ring-text"><strong id="ring-pct">0%</strong><span>today</span></div>
+          </div>
         </div>
 
-        <section class="card" aria-labelledby="today-h">
-          <h2 id="today-h">Today's medicines</h2>
-          <div
-            id="today-bar"
-            class="bar"
-            role="progressbar"
-            aria-label="Doses taken today"
-            aria-valuemin="0"
-            aria-valuemax="100"
-            aria-valuenow="0"
-          >
-            <span id="today-fill"></span>
+        <div class="stats">
+          <div class="card stat">
+            <p class="label">Doses today</p>
+            <p id="st-today" class="big-num">–</p>
           </div>
-          <p id="today-summary" class="muted"></p>
-          <ul id="today-list" class="list"></ul>
-        </section>
-
-        <div class="grid-2">
-          <section class="card" aria-labelledby="appt-h">
-            <h2 id="appt-h">Doctor appointments</h2>
-            <ul id="appt-list" class="list"></ul>
-            <form id="appt-form" hidden>
-              <h3>Add an appointment</h3>
-              <label for="a-title">What is it for?</label>
-              <input id="a-title" required />
-              <div class="row">
-                <div>
-                  <label for="a-date">Date</label><input id="a-date" type="date" required />
-                </div>
-                <div>
-                  <label for="a-time">Time</label><input id="a-time" type="time" required />
-                </div>
-              </div>
-              <label for="a-doctor">Doctor (optional)</label>
-              <input id="a-doctor" />
-              <label for="a-location">Location (optional)</label>
-              <input id="a-location" />
-              <p id="appt-error" class="error" role="alert"></p>
-              <button class="btn primary" type="submit">Add appointment</button>
-            </form>
-          </section>
-
-          <section class="card" aria-labelledby="adh-h">
-            <h2 id="adh-h">Adherence: last 7 days</h2>
-            <p class="muted">How many scheduled doses were actually taken.</p>
-            <ul id="adh-list" class="list"></ul>
-          </section>
+          <div class="card stat">
+            <p class="label">7-day adherence</p>
+            <p id="st-week" class="big-num">–</p>
+          </div>
+          <div class="card stat">
+            <p class="label">Next appointment</p>
+            <p id="st-appt" class="big-num small">–</p>
+          </div>
         </div>
 
-        <section id="meds-section" class="card" aria-labelledby="meds-h" hidden>
-          <h2 id="meds-h">Manage medications</h2>
-          <ul id="med-list" class="list"></ul>
-          <form id="med-form">
-            <h3>Add a medication</h3>
-            <div class="row">
-              <div><label for="m-name">Name</label><input id="m-name" required /></div>
-              <div>
-                <label for="m-dosage">Dosage</label
-                ><input id="m-dosage" placeholder="500mg" required />
+        <div class="layout">
+          <div class="col-main">
+            <section class="card next" aria-labelledby="next-h">
+              <p id="next-h" class="label">Next up</p>
+              <div id="next-body"></div>
+            </section>
+
+            <section class="card" aria-labelledby="today-h">
+              <h2 id="today-h">Today's schedule</h2>
+              <p id="today-summary" class="muted"></p>
+              <ul id="today-list" class="list"></ul>
+            </section>
+
+            <section id="meds-section" class="card" aria-labelledby="meds-h" data-roles="caretaker">
+              <h2 id="meds-h">Manage medications</h2>
+              <ul id="med-list" class="list"></ul>
+
+              <div class="ai-box">
+                <label for="ai-text">✨ Smart add: describe it in your own words</label>
+                <div class="ai-row">
+                  <input
+                    id="ai-text"
+                    maxlength="300"
+                    placeholder='e.g. "Metformin 500mg twice daily after meals"'
+                  />
+                  <button id="ai-btn" class="btn primary" type="button">✨ Fill with AI</button>
+                </div>
               </div>
-            </div>
-            <div class="row">
-              <div><label for="m-t1">Time 1</label><input id="m-t1" type="time" required /></div>
-              <div><label for="m-t2">Time 2 (optional)</label><input id="m-t2" type="time" /></div>
-              <div><label for="m-t3">Time 3 (optional)</label><input id="m-t3" type="time" /></div>
-            </div>
-            <label for="m-instr">Instructions (optional)</label>
-            <input id="m-instr" placeholder="After meals" />
-            <label for="m-start">Start date</label>
-            <input id="m-start" type="date" required />
-            <p id="med-error" class="error" role="alert"></p>
-            <button class="btn primary" type="submit">Add medication</button>
-          </form>
-        </section>
+
+              <form id="med-form">
+                <h3>Review and add</h3>
+                <div class="row">
+                  <div><label for="m-name">Name</label><input id="m-name" required /></div>
+                  <div>
+                    <label for="m-dosage">Dosage</label
+                    ><input id="m-dosage" placeholder="500mg" required />
+                  </div>
+                </div>
+                <div class="row">
+                  <div>
+                    <label for="m-t1">Time 1</label><input id="m-t1" type="time" required />
+                  </div>
+                  <div><label for="m-t2">Time 2</label><input id="m-t2" type="time" /></div>
+                  <div><label for="m-t3">Time 3</label><input id="m-t3" type="time" /></div>
+                  <div><label for="m-t4">Time 4</label><input id="m-t4" type="time" /></div>
+                </div>
+                <div class="row">
+                  <div>
+                    <label for="m-instr">Instructions (optional)</label
+                    ><input id="m-instr" placeholder="After meals" />
+                  </div>
+                  <div>
+                    <label for="m-start">Start date</label
+                    ><input id="m-start" type="date" required />
+                  </div>
+                </div>
+                <p id="med-error" class="error" role="alert"></p>
+                <button class="btn primary" type="submit">Add medication</button>
+              </form>
+            </section>
+
+            <section class="card" aria-labelledby="feed-h">
+              <h2 id="feed-h">Care feed</h2>
+              <p class="muted">Everything that happens in this circle, in one place.</p>
+              <form id="note-form" class="note-row">
+                <label class="sr" for="note-text">Add a care note</label>
+                <input
+                  id="note-text"
+                  maxlength="300"
+                  placeholder="Add a note for the circle…"
+                  required
+                />
+                <button class="btn primary" type="submit">Post</button>
+              </form>
+              <ul id="feed-list" class="list feed"></ul>
+            </section>
+          </div>
+
+          <aside class="col-side">
+            <section class="card" aria-labelledby="mood-h" data-roles="elder">
+              <h2 id="mood-h">How are you feeling?</h2>
+              <div class="mood-row">
+                <button class="mood" type="button" data-mood="great">
+                  <span aria-hidden="true">😄</span>Great
+                </button>
+                <button class="mood" type="button" data-mood="okay">
+                  <span aria-hidden="true">🙂</span>Okay
+                </button>
+                <button class="mood" type="button" data-mood="unwell">
+                  <span aria-hidden="true">🤒</span>Unwell
+                </button>
+              </div>
+              <p class="muted small">
+                Your family sees this. If you are unwell, they get an email.
+              </p>
+            </section>
+
+            <section class="card insight" aria-labelledby="ins-h">
+              <h2 id="ins-h">✨ Care insights</h2>
+              <p id="insight-text" aria-live="polite">Analysing…</p>
+              <div class="insight-foot">
+                <small id="insight-src" class="muted"></small>
+                <button id="btn-insight" class="btn ghost small" type="button">Refresh</button>
+              </div>
+            </section>
+
+            <section class="card" aria-labelledby="week-h">
+              <h2 id="week-h">Last 7 days</h2>
+              <ul id="week-list" class="week"></ul>
+              <h3>By medicine</h3>
+              <ul id="adh-list" class="list tight"></ul>
+            </section>
+
+            <section class="card" aria-labelledby="appt-h">
+              <h2 id="appt-h">Doctor appointments</h2>
+              <ul id="appt-list" class="list tight"></ul>
+              <form id="appt-form" data-roles="caretaker family">
+                <h3>Add an appointment</h3>
+                <label for="a-title">What is it for?</label>
+                <input id="a-title" required />
+                <div class="row">
+                  <div>
+                    <label for="a-date">Date</label><input id="a-date" type="date" required />
+                  </div>
+                  <div>
+                    <label for="a-time">Time</label><input id="a-time" type="time" required />
+                  </div>
+                </div>
+                <label for="a-doctor">Doctor (optional)</label>
+                <input id="a-doctor" />
+                <label for="a-location">Location (optional)</label>
+                <input id="a-location" />
+                <p id="appt-error" class="error" role="alert"></p>
+                <button class="btn primary" type="submit">Add appointment</button>
+              </form>
+            </section>
+          </aside>
+        </div>
       </section>
     </main>
 
     <footer class="foot">
-      CareCircle provides reminders, not medical advice. Always follow your doctor's instructions.
+      CareCircle sends reminders, not medical advice. Always follow your doctor's instructions.
     </footer>
+
+    <dialog id="sos-dialog" aria-labelledby="sos-h">
+      <h2 id="sos-h">Send an SOS?</h2>
+      <p>Your whole care circle will be emailed straight away.</p>
+      <div class="dlg-btns">
+        <button id="sos-cancel" class="btn ghost" type="button">Cancel</button>
+        <button id="sos-confirm" class="btn sos" type="button">Yes, send help</button>
+      </div>
+    </dialog>
+
+    <dialog id="info-dialog" aria-labelledby="info-h">
+      <h2 id="info-h"></h2>
+      <p id="info-text"></p>
+      <p class="muted small">Summary only, not medical advice. Ask your doctor or pharmacist.</p>
+      <div class="dlg-btns">
+        <button id="info-close" class="btn primary" type="button">Close</button>
+      </div>
+    </dialog>
+
     <div id="toast" class="toast" role="status" aria-live="polite"></div>
     <script src="/app.js" defer></script>
   </body>

@@ -94,21 +94,50 @@ function upcomingSlots(meds, doses, now, windowMin = 10) {
   return out;
 }
 
-/** Doses overdue by at least `graceMin` (but within `lookbackMin`) and still not taken. */
-function missedSlots(meds, doses, now, graceMin = 30, lookbackMin = 240) {
-  const taken = new Set(doses.map((d) => takenKey(d.medicationId, d.date, d.time)));
+/** Per-day totals for the last `days` days (oldest first). Future slots today are not counted. */
+function dailyAdherence(meds, doses, days, now = new Date()) {
+  const { date: today, time: nowTime } = istParts(now);
+  const taken = new Set(doses.map((d) => `${d.medicationId}|${d.date}|${d.time}`));
   const out = [];
-  for (const date of candidateDates(now)) {
+  for (let i = days - 1; i >= 0; i--) {
+    const date = istParts(new Date(now.getTime() - i * DAY_MS)).date;
+    let expected = 0;
+    let took = 0;
     for (const med of meds) {
       if (!isActiveOn(med, date)) continue;
       for (const time of med.times) {
-        const late = now.getTime() - slotMs(date, time);
-        if (late >= graceMin * 60000 && late <= lookbackMin * 60000) {
-          if (!taken.has(takenKey(med.id, date, time))) out.push({ med, date, time });
+        if (date === today && time > nowTime) continue;
+        expected++;
+        if (taken.has(`${med.id}|${date}|${time}`)) took++;
+      }
+    }
+    out.push({ date, expected, taken: took });
+  }
+  return out;
+}
+/** Doses missed more than 30 minutes ago, within the 4-hour lookback window. */
+function missedSlots(meds, doses, now) {
+  const taken = new Set(doses.map((d) => takenKey(d.medicationId, d.date, d.time)));
+
+  const GRACE_MS = 30 * 60 * 1000;
+  const LOOKBACK_MS = 4 * 60 * 60 * 1000;
+  const out = [];
+
+  for (const date of candidateDates(now)) {
+    for (const med of meds) {
+      if (!isActiveOn(med, date)) continue;
+
+      for (const time of med.times) {
+        const key = takenKey(med.id, date, time);
+        const elapsed = now.getTime() - slotMs(date, time);
+
+        if (elapsed > GRACE_MS && elapsed <= LOOKBACK_MS && !taken.has(key)) {
+          out.push({ med, date, time });
         }
       }
     }
   }
+
   return out;
 }
 
@@ -119,6 +148,7 @@ module.exports = {
   isActiveOn,
   todaySlots,
   computeAdherence,
+  dailyAdherence,
   slotMs,
   upcomingSlots,
   missedSlots,

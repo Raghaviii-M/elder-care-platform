@@ -2,7 +2,13 @@ const express = require('express');
 const { requireRole } = require('../middleware/auth');
 const { validate } = require('../middleware/validate');
 const { doseSchema } = require('../schemas');
-const { istParts, todaySlots, computeAdherence } = require('../services/scheduleUtils');
+const {
+  istParts,
+  todaySlots,
+  computeAdherence,
+  dailyAdherence,
+} = require('../services/scheduleUtils');
+const { logActivity } = require('../services/activity');
 
 const ALL = ['elder', 'caretaker', 'family'];
 
@@ -32,7 +38,11 @@ module.exports = function doseRoutes(repo) {
         repo.listItems(circleId, 'medications'),
         repo.listItems(circleId, 'doses', { sinceDate }),
       ]);
-      res.json({ days, medications: computeAdherence(meds, doses, days) });
+      res.json({
+        days,
+        medications: computeAdherence(meds, doses, days),
+        daily: dailyAdherence(meds, doses, days),
+      });
     } catch (err) {
       next(err);
     }
@@ -56,6 +66,7 @@ module.exports = function doseRoutes(repo) {
         if (date > today) return res.status(400).json({ error: 'Cannot log a future dose' });
 
         const id = `${medicationId}_${date}_${time.replace(':', '')}`;
+        const existing = await repo.getItem(circleId, 'doses', id);
         const dose = await repo.setItem(circleId, 'doses', id, {
           medicationId,
           date,
@@ -63,6 +74,9 @@ module.exports = function doseRoutes(repo) {
           takenAt: new Date().toISOString(),
           takenBy: role,
         });
+        if (!existing) {
+          await logActivity(repo, req.user, 'dose', `${med.name} (${time}) marked as taken`);
+        }
         res.status(201).json(dose);
       } catch (err) {
         next(err);

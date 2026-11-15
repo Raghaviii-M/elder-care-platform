@@ -9,8 +9,31 @@ const DEMO = {
 
 const dayStr = (offset) => istParts(new Date(Date.now() + offset * DAY_MS)).date;
 
+async function seedActivity(repo) {
+  const events = [
+    ['checkin', 'Elder is feeling great', 'elder', 40],
+    ['dose', 'Amlodipine (09:00) marked as taken', 'elder', 180],
+    ['note', 'Dr. Rao suggested drinking more water this week', 'family', 600],
+    ['med_added', 'Caretaker added Vitamin D3 1000 IU at 21:00', 'caretaker', 1500, true],
+  ];
+  for (const [type, text, actor, minsAgo, needsAck] of events) {
+    const at = new Date(Date.now() - minsAgo * 60000);
+    await repo.addItem(DEMO.id, 'activity', {
+      type,
+      text,
+      actor,
+      at: at.toISOString(),
+      date: istParts(at).date,
+      needsAck: Boolean(needsAck),
+    });
+  }
+}
+
 async function seedDemo(repo) {
-  if (await repo.getCircle(DEMO.id)) return false;
+  if (await repo.getCircle(DEMO.id)) {
+    if ((await repo.listItems(DEMO.id, 'activity')).length === 0) await seedActivity(repo);
+    return false;
+  }
 
   const passcodes = {};
   for (const [role, code] of Object.entries(DEMO.passcodes)) {
@@ -59,6 +82,7 @@ async function seedDemo(repo) {
     date: dayStr(3),
     time: '10:30',
   });
+  await seedActivity(repo);
   return true;
 }
 

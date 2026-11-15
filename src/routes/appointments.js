@@ -3,6 +3,7 @@ const { requireRole } = require('../middleware/auth');
 const { validate } = require('../middleware/validate');
 const { validIdParam } = require('../middleware/ids');
 const { appointmentSchema } = require('../schemas');
+const { logActivity } = require('../services/activity');
 
 const KIND = 'appointments';
 
@@ -25,7 +26,15 @@ module.exports = function appointmentRoutes(repo) {
     validate(appointmentSchema),
     async (req, res, next) => {
       try {
-        res.status(201).json(await repo.addItem(req.user.circleId, KIND, req.body));
+        const appt = await repo.addItem(req.user.circleId, KIND, req.body);
+        await logActivity(
+          repo,
+          req.user,
+          'appt_added',
+          `Appointment added: ${appt.title} on ${appt.date} at ${appt.time}`,
+          { needsAck: true },
+        );
+        res.status(201).json(appt);
       } catch (err) {
         next(err);
       }

@@ -76,6 +76,36 @@ function createEmailService({
           circle.name,
         ),
       ),
+    sendSos: (circle) =>
+      send(
+        circle.emails,
+        '🚨 SOS: help requested',
+        layout(
+          'SOS: the elder pressed the help button',
+          '<p><strong>Please call them right now.</strong></p>',
+          circle.name,
+        ),
+      ),
+    sendWellbeingAlert: (circle, { note }) =>
+      send(
+        circle.emails,
+        '⚠️ Not feeling well today',
+        layout(
+          'The elder reported not feeling well',
+          `<p>${esc(note || 'No details given.')}</p><p>Please check in with them.</p>`,
+          circle.name,
+        ),
+      ),
+    sendConcern: (circle, item) =>
+      send(
+        circle.emails,
+        '🛑 The elder raised a concern',
+        layout(
+          'A change needs a second look',
+          `<p>${esc(item.text)}</p><p>The elder marked this as not right. Please talk to them.</p>`,
+          circle.name,
+        ),
+      ),
   };
 }
 

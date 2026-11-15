@@ -8,11 +8,14 @@ const authRoutes = require('./routes/auth');
 const medicationRoutes = require('./routes/medications');
 const doseRoutes = require('./routes/doses');
 const appointmentRoutes = require('./routes/appointments');
+const activityRoutes = require('./routes/activity');
+const aiRoutes = require('./routes/ai');
 const internalRoutes = require('./routes/internal');
 const { createEmailService } = require('./services/emailService');
+const { createAiService } = require('./services/aiService');
 const { notFound, errorHandler } = require('./middleware/errors');
 
-function createApp({ repo, email = createEmailService() }) {
+function createApp({ repo, email = createEmailService(), ai = createAiService() }) {
   const app = express();
   app.disable('x-powered-by');
   app.set('trust proxy', 1); // behind Render's proxy: needed for correct rate-limit IPs
@@ -21,7 +24,6 @@ function createApp({ repo, email = createEmailService() }) {
     helmet({
       contentSecurityPolicy: {
         useDefaults: true,
-        // only force https in production, so http://localhost works in every browser
         directives: { 'upgrade-insecure-requests': config.isProd ? [] : null },
       },
     }),
@@ -35,6 +37,8 @@ function createApp({ repo, email = createEmailService() }) {
   app.use('/api/medications', medicationRoutes(repo));
   app.use('/api/doses', doseRoutes(repo));
   app.use('/api/appointments', appointmentRoutes(repo));
+  app.use('/api/activity', activityRoutes({ repo, email }));
+  app.use('/api/ai', aiRoutes({ repo, ai }));
   app.use('/api/internal', internalRoutes({ repo, email }));
 
   app.use(express.static(path.join(__dirname, '..', 'public'), { maxAge: '1h' }));

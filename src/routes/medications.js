@@ -3,6 +3,7 @@ const { requireRole } = require('../middleware/auth');
 const { validate } = require('../middleware/validate');
 const { validIdParam } = require('../middleware/ids');
 const { medSchema } = require('../schemas');
+const { logActivity } = require('../services/activity');
 
 const KIND = 'medications';
 const ALL = ['elder', 'caretaker', 'family'];
@@ -22,7 +23,15 @@ module.exports = function medicationRoutes(repo) {
 
   router.post('/', requireRole('caretaker'), validate(medSchema), async (req, res, next) => {
     try {
-      res.status(201).json(await repo.addItem(req.user.circleId, KIND, req.body));
+      const med = await repo.addItem(req.user.circleId, KIND, req.body);
+      await logActivity(
+        repo,
+        req.user,
+        'med_added',
+        `Caretaker added ${med.name} ${med.dosage} at ${med.times.join(', ')}`,
+        { needsAck: true },
+      );
+      res.status(201).json(med);
     } catch (err) {
       next(err);
     }
@@ -39,6 +48,9 @@ module.exports = function medicationRoutes(repo) {
         }
         const updated = await repo.updateItem(req.user.circleId, KIND, req.params.id, req.body);
         if (!updated) return res.status(404).json({ error: 'Not found' });
+        await logActivity(repo, req.user, 'med_updated', `Caretaker updated ${updated.name}`, {
+          needsAck: true,
+        });
         res.json(updated);
       } catch (err) {
         next(err);
@@ -48,8 +60,13 @@ module.exports = function medicationRoutes(repo) {
 
   router.delete('/:id', requireRole('caretaker'), async (req, res, next) => {
     try {
-      const removed = await repo.removeItem(req.user.circleId, KIND, req.params.id);
-      if (!removed) return res.status(404).json({ error: 'Not found' });
+      const { circleId } = req.user;
+      const existing = await repo.getItem(circleId, KIND, req.params.id);
+      if (!existing) return res.status(404).json({ error: 'Not found' });
+      await repo.removeItem(circleId, KIND, req.params.id);
+      await logActivity(repo, req.user, 'med_deleted', `Caretaker removed ${existing.name}`, {
+        needsAck: true,
+      });
       res.sendStatus(204);
     } catch (err) {
       next(err);
